@@ -1,0 +1,33 @@
+name: Atualiza Cotação do Dólar no README
+
+on:
+  schedule:
+    - cron: '0 12 * * *' # Executa todos os dias às 12h UTC (9h no Brasil)
+  workflow_dispatch: # Permite executar manualmente pelo GitHub
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Atualizar README com cotação atual
+        run: python atualiza_readme.py
+
+      - name: Commit e push das mudanças
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          git commit -m "🤖 Atualização automática da cotação do dólar"
+          git push
