@@ -27,10 +27,14 @@ jobs:
       - name: Atualizar README com cotação atual
         run: python atualiza_readme.py
 
-      - name: Commit e push das mudanças
+          - name: Commit e push das mudancas
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "juanmmendes"
+          git config user.email "juanmmendes@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/juanmmendes/ConsumoApiCotacao.git
           git add README.md
           git commit -m "🤖 Atualização automática da cotação do dólar"
           git push
+
