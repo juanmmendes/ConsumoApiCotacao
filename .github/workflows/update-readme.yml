@@ -27,7 +27,7 @@ jobs:
       - name: Atualizar README com cotação atual
         run: python atualiza_readme.py
 
-          - name: Commit e push das mudancas
+      - name: Commit e push das mudancas
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
