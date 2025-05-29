@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotações em Tempo Real</title>
+    <title>Cotações Pro - Sistema Completo de Investimentos</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -20,7 +21,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -40,6 +41,49 @@
         .header p {
             font-size: 1.2rem;
             opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .tab.active:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .dashboard {
@@ -111,23 +155,45 @@
             color: #666;
         }
 
-        .converter-section {
+        .card-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-small:hover {
+            transform: translateY(-1px);
+        }
+
+        .section {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
             padding: 30px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             backdrop-filter: blur(10px);
         }
 
-        .converter-section h2 {
+        .section h2 {
             text-align: center;
             margin-bottom: 20px;
             color: #2c3e50;
             font-size: 2rem;
         }
 
-        .converter-form {
+        .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
@@ -160,7 +226,7 @@
             border-color: #667eea;
         }
 
-        .btn-converter {
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -171,17 +237,42 @@
             transition: transform 0.2s ease;
         }
 
-        .btn-converter:hover {
+        .btn-primary:hover {
             transform: translateY(-2px);
         }
 
-        .resultado-conversao {
+        .resultado-box {
             margin-top: 20px;
             padding: 20px;
             background: #f8f9fa;
             border-radius: 8px;
             border-left: 4px solid #667eea;
             display: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
         }
 
         .loading {
@@ -204,11 +295,70 @@
             100% { transform: rotate(360deg); }
         }
 
-        .footer {
-            text-align: center;
+        .portfolio-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .portfolio-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            margin-top: 40px;
-            opacity: 0.8;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
         }
 
         @media (max-width: 768px) {
@@ -216,71 +366,243 @@
                 font-size: 2rem;
             }
             
-            .converter-form {
+            .form-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .tabs {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fas fa-chart-line"></i> Cotações em Tempo Real</h1>
-            <p>Acompanhe as principais moedas e criptomoedas do mercado</p>
+            <h1><i class="fas fa-chart-line"></i> Cotações Pro</h1>
+            <p>Sistema completo para investimentos e análise de mercado</p>
         </div>
 
-        <div id="cotacoes-container">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Carregando cotações...</p>
+        <div class="tabs">
+            <button class="tab active" onclick="openTab(event, 'dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </button>
+            <button class="tab" onclick="openTab(event, 'converter')">
+                <i class="fas fa-exchange-alt"></i> Conversor
+            </button>
+            <button class="tab" onclick="openTab(event, 'portfolio')">
+                <i class="fas fa-briefcase"></i> Portfólio
+            </button>
+            <button class="tab" onclick="openTab(event, 'alertas')">
+                <i class="fas fa-bell"></i> Alertas
+            </button>
+            <button class="tab" onclick="openTab(event, 'graficos')">
+                <i class="fas fa-chart-area"></i> Gráficos
+            </button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div id="cotacoes-container">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Carregando cotações...</p>
+                </div>
             </div>
         </div>
 
-        <div class="converter-section">
-            <h2><i class="fas fa-exchange-alt"></i> Conversor de Moedas</h2>
-            <div class="converter-form">
-                <div class="form-group">
-                    <label for="valor">Valor</label>
-                    <input type="number" id="valor" value="1" step="0.01" min="0">
+        <!-- Conversor Tab -->
+        <div id="converter" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-exchange-alt"></i> Conversor de Moedas</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="valor">Valor</label>
+                        <input type="number" id="valor" value="1" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="moeda-origem">De</label>
+                        <select id="moeda-origem">
+                            <option value="USD">USD - Dólar Americano</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - Libra Esterlina</option>
+                            <option value="BRL">BRL - Real Brasileiro</option>
+                            <option value="ARS">ARS - Peso Argentino</option>
+                            <option value="BTC">BTC - Bitcoin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="moeda-destino">Para</label>
+                        <select id="moeda-destino">
+                            <option value="BRL">BRL - Real Brasileiro</option>
+                            <option value="USD">USD - Dólar Americano</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - Libra Esterlina</option>
+                            <option value="ARS">ARS - Peso Argentino</option>
+                            <option value="BTC">BTC - Bitcoin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn-primary" onclick="converter()">
+                            <i class="fas fa-calculator"></i> Converter
+                        </button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="moeda-origem">De</label>
-                    <select id="moeda-origem">
-                        <option value="USD">USD - Dólar Americano</option>
-                        <option value="EUR">EUR - Euro</option>
-                        <option value="GBP">GBP - Libra Esterlina</option>
-                        <option value="BRL">BRL - Real Brasileiro</option>
-                        <option value="ARS">ARS - Peso Argentino</option>
-                        <option value="BTC">BTC - Bitcoin</option>
-                    </select>
+                <div id="resultado-conversao" class="resultado-box"></div>
+            </div>
+        </div>
+
+        <!-- Portfolio Tab -->
+        <div id="portfolio" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-briefcase"></i> Meu Portfólio</h2>
+                
+                <div id="portfolio-stats" class="portfolio-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-investido">R$ 0,00</div>
+                        <div class="stat-label">Total Investido</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="valor-atual">R$ 0,00</div>
+                        <div class="stat-label">Valor Atual</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="lucro-prejuizo">R$ 0,00</div>
+                        <div class="stat-label">Lucro/Prejuízo</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="percentual-total">0%</div>
+                        <div class="stat-label">Rentabilidade</div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="moeda-destino">Para</label>
-                    <select id="moeda-destino">
-                        <option value="BRL">BRL - Real Brasileiro</option>
-                        <option value="USD">USD - Dólar Americano</option>
-                        <option value="EUR">EUR - Euro</option>
-                        <option value="GBP">GBP - Libra Esterlina</option>
-                        <option value="ARS">ARS - Peso Argentino</option>
-                        <option value="BTC">BTC - Bitcoin</option>
-                    </select>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="portfolio-moeda">Moeda</label>
+                        <select id="portfolio-moeda">
+                            <option value="USD">USD - Dólar Americano</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - Libra Esterlina</option>
+                            <option value="ARS">ARS - Peso Argentino</option>
+                            <option value="BTC">BTC - Bitcoin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="portfolio-quantidade">Quantidade</label>
+                        <input type="number" id="portfolio-quantidade" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="portfolio-preco">Preço de Compra</label>
+                        <input type="number" id="portfolio-preco" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn-primary" onclick="adicionarInvestimento()">
+                            <i class="fas fa-plus"></i> Adicionar
+                        </button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <button class="btn-converter" onclick="converter()">
-                        <i class="fas fa-calculator"></i> Converter
-                    </button>
+
+                <div id="portfolio-lista" style="margin-top: 30px;"></div>
+            </div>
+        </div>
+
+        <!-- Alertas Tab -->
+        <div id="alertas" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-bell"></i> Alertas de Preço</h2>
+                <p style="text-align: center; margin-bottom: 30px; color: #666;">
+                    Receba notificações quando uma moeda atingir o preço desejado
+                </p>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="alerta-email">Seu E-mail</label>
+                        <input type="email" id="alerta-email" placeholder="seu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="alerta-moeda">Moeda</label>
+                        <select id="alerta-moeda">
+                            <option value="USD-BRL">USD - Dólar Americano</option>
+                            <option value="EUR-BRL">EUR - Euro</option>
+                            <option value="GBP-BRL">GBP - Libra Esterlina</option>
+                            <option value="ARS-BRL">ARS - Peso Argentino</option>
+                            <option value="BTC-BRL">BTC - Bitcoin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="alerta-tipo">Tipo de Alerta</label>
+                        <select id="alerta-tipo">
+                            <option value="acima">Quando subir acima de</option>
+                            <option value="abaixo">Quando descer abaixo de</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="alerta-valor">Valor (R$)</label>
+                        <input type="number" id="alerta-valor" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn-primary" onclick="criarAlerta()">
+                            <i class="fas fa-bell"></i> Criar Alerta
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="alerta-resultado" class="resultado-box"></div>
+            </div>
+        </div>
+
+        <!-- Gráficos Tab -->
+        <div id="graficos" class="tab-content">
+            <div class="section">
+                <h2><i class="fas fa-chart-area"></i> Análise Histórica</h2>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="grafico-moeda">Selecionar Moeda</label>
+                        <select id="grafico-moeda" onchange="carregarGrafico()">
+                            <option value="USD-BRL">USD - Dólar Americano</option>
+                            <option value="EUR-BRL">EUR - Euro</option>
+                            <option value="GBP-BRL">GBP - Libra Esterlina</option>
+                            <option value="ARS-BRL">ARS - Peso Argentino</option>
+                            <option value="BTC-BRL">BTC - Bitcoin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="grafico-periodo">Período</label>
+                        <select id="grafico-periodo" onchange="carregarGrafico()">
+                            <option value="7">7 dias</option>
+                            <option value="15">15 dias</option>
+                            <option value="30">30 dias</option>
+                            <option value="60">60 dias</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="historicoChart"></canvas>
                 </div>
             </div>
-            <div id="resultado-conversao" class="resultado-conversao"></div>
         </div>
 
         <div class="footer">
-            <p>Dados fornecidos por AwesomeAPI • Atualizado automaticamente</p>
+            <p>Dados fornecidos por AwesomeAPI • Atualizado automaticamente • <i class="fas fa-heart" style="color: #e74c3c;"></i> Feito para investidores</p>
         </div>
     </div>
 
     <script>
-        // Mapeamento de moedas para flags e nomes
+        // Variáveis globais
+        let currentChart = null;
+        
+        // Mapeamento de moedas
         const moedasInfo = {
             'USD-BRL': { flag: '🇺🇸', nome: 'Dólar Americano', simbolo: 'USD' },
             'EUR-BRL': { flag: '🇪🇺', nome: 'Euro', simbolo: 'EUR' },
@@ -289,7 +611,29 @@
             'BTC-BRL': { flag: '₿', nome: 'Bitcoin', simbolo: 'BTC' }
         };
 
-        // Carregar cotações
+        // Função para abrir tabs
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            
+            // Carregar dados específicos da tab
+            if (tabName === 'portfolio') {
+                carregarPortfolio();
+            } else if (tabName === 'graficos') {
+                carregarGrafico();
+            }
+        }
+
+        // Carregar cotações principais
         async function carregarCotacoes() {
             try {
                 const response = await fetch('/api/cotacoes');
@@ -327,6 +671,14 @@
                                 <div><strong>Venda:</strong> R$ ${parseFloat(dados.ask).toFixed(4)}</div>
                                 <div><strong>Máxima:</strong> R$ ${parseFloat(dados.high).toFixed(4)}</div>
                                 <div><strong>Mínima:</strong> R$ ${parseFloat(dados.low).toFixed(4)}</div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-small" onclick="adicionarAoPortfolio('${info.simbolo}', ${dados.bid})">
+                                    <i class="fas fa-plus"></i> Portfólio
+                                </button>
+                                <button class="btn-small" onclick="criarAlertaRapido('${par}', ${dados.bid})">
+                                    <i class="fas fa-bell"></i> Alerta
+                                </button>
                             </div>
                         </div>
                     `;
@@ -396,17 +748,275 @@
             }
         }
 
-        // Carregar cotações ao iniciar a página
-        carregarCotacoes();
-        
-        // Atualizar cotações a cada 30 segundos
-        setInterval(carregarCotacoes, 30000);
-        
-        // Permitir conversão com Enter
-        document.getElementById('valor').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                converter();
+        // Adicionar investimento ao portfólio
+        async function adicionarInvestimento() {
+            const moeda = document.getElementById('portfolio-moeda').value;
+            const quantidade = document.getElementById('portfolio-quantidade').value;
+            const preco = document.getElementById('portfolio-preco').value;
+            
+            if (!quantidade || !preco || quantidade <= 0 || preco <= 0) {
+                alert('Por favor, preencha todos os campos com valores válidos');
+                return;
             }
+            
+            try {
+                const response = await fetch('/api/portfolio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        moeda: moeda,
+                        quantidade: parseFloat(quantidade),
+                        preco_compra: parseFloat(preco)
+                    })
+                });
+                
+                const resultado = await response.json();
+                
+                if (resultado.sucesso) {
+                    // Limpar formulário
+                    document.getElementById('portfolio-quantidade').value = '';
+                    document.getElementById('portfolio-preco').value = '';
+                    
+                    // Recarregar portfólio
+                    carregarPortfolio();
+                    
+                    // Mostrar mensagem de sucesso
+                    alert('Investimento adicionado com sucesso!');
+                } else {
+                    alert('Erro ao adicionar investimento: ' + resultado.erro);
+                }
+                
+            } catch (error) {
+                console.error('Erro ao adicionar investimento:', error);
+                alert('Erro ao adicionar investimento. Tente novamente.');
+            }
+        }
+
+        // Carregar portfólio
+        async function carregarPortfolio() {
+            try {
+                const response = await fetch('/api/portfolio');
+                const portfolio = await response.json();
+                
+                const statsContainer = document.getElementById('portfolio-stats');
+                const listaContainer = document.getElementById('portfolio-lista');
+                
+                if (portfolio.length === 0) {
+                    listaContainer.innerHTML = '<p style="text-align: center; color: #666;">Seu portfólio está vazio. Adicione seus primeiros investimentos!</p>';
+                    return;
+                }
+                
+                // Calcular totais
+                let totalInvestido = 0;
+                let valorAtual = 0;
+                
+                let listaHtml = '<h3 style="margin-bottom: 20px;">Seus Investimentos</h3>';
+                
+                portfolio.forEach(item => {
+                    totalInvestido += item.valor_investido;
+                    valorAtual += item.valor_atual;
+                    
+                    const isLucro = item.lucro_prejuizo >= 0;
+                    
+                    listaHtml += `
+                        <div class="portfolio-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <strong>${item.moeda}</strong> - ${item.quantidade} unidades
+                                    <br><small>Comprado por R$ ${item.preco_compra.toFixed(4)} em ${new Date(item.data_compra).toLocaleDateString('pt-BR')}</small>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div><strong>Valor Atual:</strong> R$ ${item.valor_atual.toFixed(2)}</div>
+                                    <div style="color: ${isLucro ? '#27ae60' : '#e74c3c'};">
+                                        <strong>${isLucro ? '+' : ''}R$ ${item.lucro_prejuizo.toFixed(2)} (${item.percentual.toFixed(2)}%)</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                const lucroPrejuizo = valorAtual - totalInvestido;
+                const percentualTotal = totalInvestido > 0 ? ((valorAtual - totalInvestido) / totalInvestido) * 100 : 0;
+                
+                // Atualizar estatísticas
+                document.getElementById('total-investido').textContent = `R$ ${totalInvestido.toFixed(2)}`;
+                document.getElementById('valor-atual').textContent = `R$ ${valorAtual.toFixed(2)}`;
+                document.getElementById('lucro-prejuizo').textContent = `${lucroPrejuizo >= 0 ? '+' : ''}R$ ${lucroPrejuizo.toFixed(2)}`;
+                document.getElementById('lucro-prejuizo').style.color = lucroPrejuizo >= 0 ? '#27ae60' : '#e74c3c';
+                document.getElementById('percentual-total').textContent = `${percentualTotal >= 0 ? '+' : ''}${percentualTotal.toFixed(2)}%`;
+                document.getElementById('percentual-total').style.color = percentualTotal >= 0 ? '#27ae60' : '#e74c3c';
+                
+                listaContainer.innerHTML = listaHtml;
+                
+            } catch (error) {
+                console.error('Erro ao carregar portfólio:', error);
+                document.getElementById('portfolio-lista').innerHTML = '<p style="color: #e74c3c;">Erro ao carregar portfólio.</p>';
+            }
+        }
+
+        // Criar alerta de preço
+        async function criarAlerta() {
+            const email = document.getElementById('alerta-email').value;
+            const moeda = document.getElementById('alerta-moeda').value;
+            const tipo = document.getElementById('alerta-tipo').value;
+            const valor = document.getElementById('alerta-valor').value;
+            const resultadoDiv = document.getElementById('alerta-resultado');
+            
+            if (!email || !valor || valor <= 0) {
+                alert('Por favor, preencha todos os campos');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/alerta', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        moeda: moeda,
+                        tipo: tipo,
+                        valor: parseFloat(valor)
+                    })
+                });
+                
+                const resultado = await response.json();
+                
+                if (resultado.sucesso) {
+                    resultadoDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i> Alerta criado com sucesso! Você receberá um email quando o preço for atingido.</div>';
+                    resultadoDiv.style.display = 'block';
+                    
+                    // Limpar formulário
+                    document.getElementById('alerta-valor').value = '';
+                } else {
+                    resultadoDiv.innerHTML = `<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i> ${resultado.erro}</div>`;
+                    resultadoDiv.style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Erro ao criar alerta:', error);
+                resultadoDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i> Erro ao criar alerta. Tente novamente.</div>';
+                resultadoDiv.style.display = 'block';
+            }
+        }
+
+        // Carregar gráfico histórico
+        async function carregarGrafico() {
+            const moeda = document.getElementById('grafico-moeda').value;
+            const periodo = document.getElementById('grafico-periodo').value;
+            
+            try {
+                const response = await fetch(`/api/historico/${moeda}?dias=${periodo}`);
+                const dados = await response.json();
+                
+                if (dados.length === 0) {
+                    alert('Dados históricos não encontrados para esta moeda.');
+                    return;
+                }
+                
+                const ctx = document.getElementById('historicoChart').getContext('2d');
+                
+                // Destruir gráfico anterior
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+                
+                currentChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dados.map(d => new Date(d.data).toLocaleDateString('pt-BR')),
+                        datasets: [
+                            {
+                                label: 'Preço Médio',
+                                data: dados.map(d => d.media),
+                                borderColor: '#667eea',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            },
+                            {
+                                label: 'Máxima',
+                                data: dados.map(d => d.maxima),
+                                borderColor: '#27ae60',
+                                backgroundColor: 'transparent',
+                                borderDash: [5, 5],
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Mínima',
+                                data: dados.map(d => d.minima),
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'transparent',
+                                borderDash: [5, 5],
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Histórico - ${moedasInfo[moeda]?.nome || moeda} (${periodo} dias)`
+                            },
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'R$ ' + value.toFixed(4);
+                                    }
+                                }
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Erro ao carregar gráfico:', error);
+                alert('Erro ao carregar dados históricos.');
+            }
+        }
+
+        // Funções auxiliares para ações rápidas
+        function adicionarAoPortfolio(moeda, preco) {
+            document.getElementById('portfolio-moeda').value = moeda;
+            document.getElementById('portfolio-preco').value = preco;
+            openTab({currentTarget: document.querySelector('[onclick*="portfolio"]')}, 'portfolio');
+        }
+
+        function criarAlertaRapido(moeda, precoAtual) {
+            document.getElementById('alerta-moeda').value = moeda;
+            document.getElementById('alerta-valor').value = precoAtual;
+            openTab({currentTarget: document.querySelector('[onclick*="alertas"]')}, 'alertas');
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            carregarCotacoes();
+            
+            // Atualizar cotações a cada 30 segundos
+            setInterval(carregarCotacoes, 30000);
+            
+            // Event listeners
+            document.getElementById('valor').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    converter();
+                }
+            });
         });
     </script>
 </body>
