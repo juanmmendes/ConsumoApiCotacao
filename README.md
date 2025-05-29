@@ -1,6 +1,12 @@
 # 💱 Cotações App - Sistema de Cotações em Tempo Real
 
 Uma aplicação Flask moderna para acompanhar cotações de moedas e criptomoedas em tempo real, com conversor integrado e interface responsiva.
+## 💵 Cotação Atual do Dólar (USD/BRL)
+
+> 📅 Última atualização: --  
+> 💰 1 USD ≈ **R$ 0,00**
+
+📝 *Cotação em tempo real disponível no app acessando `/api/cotacoes`*
 
 ## 🚀 Funcionalidades
 
