@@ -2,8 +2,11 @@ name: Atualiza Cotação do Dólar no README
 
 on:
   schedule:
-    - cron: '0 12 * * *' # Executa todos os dias às 12h UTC (9h no Brasil)
-  workflow_dispatch: # Permite executar manualmente pelo GitHub
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   update-readme:
