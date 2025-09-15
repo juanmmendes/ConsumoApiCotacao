@@ -11,6 +11,13 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 
+from flask_cors import CORS
+CORS(app, resources={r"/api/*": {"origins": [
+    "https://juanmmendes.github.io",  # GitHub Pages
+    "http://localhost:3000",          # CRA
+    "http://localhost:5173"           # Vite
+]}})
+
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta_aqui'
 
