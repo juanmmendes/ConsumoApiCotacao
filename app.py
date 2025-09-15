@@ -21,6 +21,28 @@ CORS(app, resources={r"/api/*": {"origins": [
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta_aqui'
 
+@app.get("/")
+def health():
+    # endpoint simples para teste de vida
+    return jsonify({"status": "ok"}), 200
+
+@app.get("/api/cotacoes")
+def cotacoes():
+    # Símbolos: USD, EUR, GBP, ARS, BTC contra BRL
+    symbols = "USD-BRL,EUR-BRL,GBP-BRL,ARS-BRL,BTC-BRL"
+    url = f"https://economia.awesomeapi.com.br/last/{symbols}"
+    try:
+        r = requests.get(url, timeout=10)
+        r.raise_for_status()
+        data = r.json()
+        return jsonify(data), 200
+    except requests.RequestException as e:
+        return jsonify({"error": str(e)}), 502
+
+if __name__ == "__main__":
+    # Execução local (Render usará o gunicorn definido no Start Command)
+    app.run(host="0.0.0.0", port=5000)
+    
 class DatabaseManager:
     """Gerenciador do banco de dados SQLite"""
     
