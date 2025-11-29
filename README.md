@@ -4,9 +4,10 @@ Uma aplicação Flask moderna para acompanhar cotações de moedas e criptomoeda
 ## 💵 Cotação Atual do Dólar (USD/BRL)
 
 > 📅 Última atualização: 2025-11-28  
-> 💰 1 USD ≈ **R$ 5.3431**
+> 💰 1 USD ≈ **R$ 5.3354**
 
 📝 *Cotação em tempo real disponível no app acessando `/api/cotacoes`*
+
 
 
 
