@@ -184,6 +184,7 @@ Uma aplicação Flask moderna para acompanhar cotações de moedas e criptomoeda
 
 
 
+
 ## 🚀 Funcionalidades
 
 - **📊 Dashboard em Tempo Real**: Visualize cotações das principais moedas (USD, EUR, GBP, ARS, BTC)
